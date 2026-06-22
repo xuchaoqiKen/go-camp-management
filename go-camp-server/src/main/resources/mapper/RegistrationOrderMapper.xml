@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gocamp.mapper.RegistrationOrderMapper">
+
+    <select id="selectOrderPage" resultType="com.gocamp.vo.OrderListVO">
+        SELECT
+            o.id,
+            o.order_no AS orderNo,
+            o.student_id AS studentId,
+            s.name AS studentName,
+            o.session_id AS sessionId,
+            cs.session_name AS sessionName,
+            o.rank_category AS rankCategory,
+            o.accommodation_type AS accommodationType,
+            o.room_match_status AS roomMatchStatus,
+            o.total_amount AS amount,
+            o.payment_status AS paymentStatus,
+            o.order_status AS orderStatus,
+            o.create_time AS createTime
+        FROM registration_order o
+        LEFT JOIN student s ON o.student_id = s.id
+        LEFT JOIN camp_session cs ON o.session_id = cs.id
+        WHERE o.is_deleted = 0
+        <if test="studentName != null and studentName != ''">
+            AND s.name LIKE CONCAT('%', #{studentName}, '%')
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            AND o.order_no LIKE CONCAT('%', #{orderNo}, '%')
+        </if>
+        <if test="sessionId != null">
+            AND o.session_id = #{sessionId}
+        </if>
+        <if test="paymentStatus != null and paymentStatus != ''">
+            AND o.payment_status = #{paymentStatus}
+        </if>
+        <if test="roomMatchStatus != null and roomMatchStatus != ''">
+            AND o.room_match_status = #{roomMatchStatus}
+        </if>
+        <if test="startDate != null and startDate != ''">
+            AND DATE(o.create_time) &gt;= #{startDate}
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND DATE(o.create_time) &lt;= #{endDate}
+        </if>
+        ORDER BY o.create_time DESC
+    </select>
+
+    <select id="selectOrderDetail" resultType="com.gocamp.vo.OrderListVO">
+        SELECT
+            o.id,
+            o.order_no AS orderNo,
+            o.student_id AS studentId,
+            s.name AS studentName,
+            o.session_id AS sessionId,
+            cs.session_name AS sessionName,
+            o.rank_category AS rankCategory,
+            o.accommodation_type AS accommodationType,
+            o.room_match_status AS roomMatchStatus,
+            o.total_amount AS amount,
+            o.payment_status AS paymentStatus,
+            o.order_status AS orderStatus,
+            o.create_time AS createTime
+        FROM registration_order o
+        LEFT JOIN student s ON o.student_id = s.id
+        LEFT JOIN camp_session cs ON o.session_id = cs.id
+        WHERE o.id = #{id}
+    </select>
+
+</mapper>
